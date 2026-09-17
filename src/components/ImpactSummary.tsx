@@ -1,0 +1,10 @@
+import React from 'react';
+import { Activity, Clock3, Users, Waves } from 'lucide-react';
+import { useRippleStore } from '../store/useRippleStore';
+export const ImpactSummary: React.FC = () => {
+  const { cascadeResult, baselineResilience } = useRippleStore();
+  if (!cascadeResult) return <section className="panel p-5"><div className="eyebrow"><Activity className="h-3.5 w-3.5" /> Impact assessment</div><p className="mt-3 text-sm leading-6 text-slate-500">Impact metrics will appear after a simulation is completed.</p></section>;
+  const drop = Math.max(0, baselineResilience - cascadeResult.resilienceScore);
+  const items = [['Assets affected', cascadeResult.totalAffected, Activity], ['Population exposure', cascadeResult.populationAffected.toLocaleString(), Users], ['Cascade depth', `${Math.max(0, cascadeResult.steps.length - 1)} waves`, Waves], ['Recovery estimate', `${cascadeResult.estimatedRecoveryHours}h`, Clock3]] as const;
+  return <section className="panel p-5"><div className="flex items-start justify-between"><div><div className="eyebrow text-amber-300"><Activity className="h-3.5 w-3.5" /> Impact assessment</div><h2 className="mt-1 text-base font-semibold text-white">Simulation summary</h2></div><span className="status-pill border-red-500/30 bg-red-500/10 text-red-300">{cascadeResult.failedCount} failed</span></div><div className="mt-4 grid grid-cols-2 gap-2">{items.map(([label, value, Icon]) => <div key={label} className="rounded-md border border-slate-700/60 bg-slate-900/50 p-3"><Icon className="h-3.5 w-3.5 text-cyan-400" /><div className="mt-2 text-lg font-semibold text-white">{value}</div><div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div></div>)}</div><div className="mt-4 rounded-md border border-amber-500/20 bg-amber-500/[0.06] p-3 text-xs text-slate-300">Resilience score: <strong className="text-amber-300">{cascadeResult.resilienceScore}/100</strong> <span className="text-slate-500">({drop} point reduction)</span></div></section>;
+};
